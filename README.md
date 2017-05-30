@@ -1,14 +1,27 @@
 # link-checker
 
-A Clojure library designed to ... well, that part is up to you.
+A Clojure library designed to find broken links in your site.
+
+## Installation
+
+#### Leiningen
+
+[![Clojars Project](https://img.shields.io/clojars/v/com.anychart/link-checker.svg)](https://clojars.org/com.anychart/link-checker)
+
 
 ## Usage
 
-FIXME
+
+```clojure
+(:require [link-checker.core :as link-checher])
+
+(link-checker/start-by-sitemap-url
+    "https://docs.anychart.com/sitemap"
+    {:check-fn       (fn [url data]
+                       (.contains url "//docs.anychart.com"))
+     :max-loop-count 100
+     :file           "/path/to/report.txt"})
+```
 
 ## License
-
-Copyright © 2017 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+[© AnyChart.com - JavaScript charts](http://www.anychart.com).
