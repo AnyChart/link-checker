@@ -20,7 +20,7 @@ A Clojure library designed to find broken links in your site.
     {:check-fn       (fn [url data]
                        (.contains url "//docs.anychart.com"))
      :max-loop-count 100
-     :file           "/path/to/report.txt"})
+     :end-fn         (fn [res] (println "RESULT: " res))})
 ```
 
 ## License
