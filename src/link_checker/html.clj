@@ -26,13 +26,13 @@
 (defn get-raw-hrefs-soup [s]
   (let [doc (Jsoup/parse s)
         hrefs (.select doc "a[href]")
-        hrefs (map (fn [link] (.attr link "href"))  hrefs)]
+        hrefs (map (fn [link] (.attr link "href")) hrefs)]
     hrefs))
 
 
-(defn add-protocol [url]
+(defn add-protocol [url config]
   (if (.startsWith url "//")
-    (str "https:" url)
+    (str (:default-protocol config) ":" url)
     url))
 
 
@@ -55,12 +55,12 @@
   (first (string/split url #"#")))
 
 
-(defn fix-url [url source-url]
+(defn fix-url [url source-url config]
   (-> url
       ;; delete hash from last
       delete-page-hash
       ;; add https if not
-      add-protocol
+      (add-protocol config)
       ;;.add base to "/path/path"
       (add-base-path (url-utils/base-path source-url))
       ;; fix relative: "../path/path"
@@ -68,13 +68,13 @@
 
 
 ;; (link-cheker.html/get-page-urls "https://docs.anychart.com/Quick_Start/Quick_Start" (slurp "https://docs.anychart.com/Quick_Start/Quick_Start"))
-(defn get-page-urls [source-url s]
-  (let [                                                    ;base-path (url-utils/base-path source-url)
+(defn get-page-urls [source-url s config]
+  (let [;base-path (url-utils/base-path source-url)
         raw-urls (get-raw-hrefs-soup s)
         ;; delete local #hrefs
         raw-urls (distinct (remove #(.startsWith % "#") raw-urls))
         ;; create hash-map data for each url
-        raw-urls (map #(hash-map :url (fix-url % source-url)
+        raw-urls (map #(hash-map :url (fix-url % source-url config)
                                  :href %) raw-urls)
         ;; group hrefs to one link
         raw-urls (group-by :url raw-urls)

@@ -37,7 +37,7 @@
                   (fn [{:keys [body status trace-redirects] :as response}]
                     ;(prn :ok url status @*current-count "/" urls-count)
                     (let [redirected-url (or (last trace-redirects) url)
-                          page-urls (link-checker.html/get-page-urls redirected-url body)]
+                          page-urls (link-checker.html/get-page-urls redirected-url body config)]
                       (swap! *result (fn [result]
                                        (let [result (assoc-in result [url :status] status)
                                              result (reduce (fn [result {new-url :url hrefs :hrefs}]
@@ -89,14 +89,14 @@
       (do
         (println "Stop, uncheked: " (count (get-urls-for-check *result (:check-fn config))) ", from total:" (count @*result))
         (let [report-result-filtered (filter
-                              (fn [[url data]]
-                                (and
-                                  ((:check-fn config) url data)
-                                  (integer? (:status data))
-                                  (not= (:status data) 200)))
-                              @*result)
-              report-result (map (fn [[url data]] {:url url
-                                                 :from (:from data)}) report-result-filtered)]
+                                       (fn [[url data]]
+                                         (and
+                                           ((:check-fn config) url data)
+                                           (integer? (:status data))
+                                           (not= (:status data) 200)))
+                                       @*result)
+              report-result (map (fn [[url data]] {:url  url
+                                                   :from (:from data)}) report-result-filtered)]
           (println "Print report, urls for check: " (count (get-urls-for-check *result (:check-fn config))) ", total: " (count @*result))
           (when (:end-fn config)
             ((:end-fn config) report-result)))))))
@@ -105,7 +105,8 @@
 (defn start-by-urls [urls init-url config]
   (let [config (assoc config
                  :*loop-count (atom 0)
-                 :max-loop-count (or (:max-loop-count config) Integer/MAX_VALUE))
+                 :max-loop-count (or (:max-loop-count config) Integer/MAX_VALUE)
+                 :default-protocol (or (:default-protocol config) "https"))
         result (reduce (fn [res url]
                          (assoc res url {:from [{:url   init-url
                                                  :hrefs [init-url]}]}))

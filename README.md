@@ -17,10 +17,15 @@ A Clojure library designed to find broken links in your site.
 
 (link-checker/start-by-sitemap-url
     "https://docs.anychart.com/sitemap"
-    {:check-fn       (fn [url data]
-                       (.contains url "//docs.anychart.com"))
-     :max-loop-count 100
-     :end-fn         (fn [res] (println "RESULT: " res))})
+    {;; function for filtering links which to process
+     :check-fn         (fn [url data]
+                         (.contains url "//docs.anychart.com"))
+     ;; each loop it sends 100 requests
+     :max-loop-count   100
+     ;; apply to urls like '//example.com'
+     :default-protocol "https" 
+     ;; invoke on end
+     :end-fn           (fn [result] (println "RESULT: " result))})
 ```
 
 ## License
