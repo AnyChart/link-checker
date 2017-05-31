@@ -2,7 +2,8 @@
   (:require [net.cgrand.enlive-html :as html]
             [link-checker.url :as url-utils]
             [cemerick.url]
-            [clojure.string :as string]))
+            [clojure.string :as string])
+  (:import (org.jsoup Jsoup)))
 
 
 (defn get-raw-hrefs
@@ -19,6 +20,13 @@
         hrefs (some->> (html/select page [:a])
                        (filter #(some? (:href (:attrs %))))
                        (map #(:href (:attrs %))))]
+    hrefs))
+
+
+(defn get-raw-hrefs-soup [s]
+  (let [doc (Jsoup/parse s)
+        hrefs (.select doc "a[href]")
+        hrefs (map (fn [link] (.attr link "href"))  hrefs)]
     hrefs))
 
 
@@ -61,8 +69,8 @@
 
 ;; (link-cheker.html/get-page-urls "https://docs.anychart.com/Quick_Start/Quick_Start" (slurp "https://docs.anychart.com/Quick_Start/Quick_Start"))
 (defn get-page-urls [source-url s]
-  (let [base-path (url-utils/base-path source-url)
-        raw-urls (get-raw-hrefs s)
+  (let [                                                    ;base-path (url-utils/base-path source-url)
+        raw-urls (get-raw-hrefs-soup s)
         ;; delete local #hrefs
         raw-urls (distinct (remove #(.startsWith % "#") raw-urls))
         ;; create hash-map data for each url

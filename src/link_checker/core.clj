@@ -88,22 +88,7 @@
         (check-url-async url *result urls-count *current-count run-requests config))
       (do
         (println "Stop, uncheked: " (count (get-urls-for-check *result (:check-fn config))) ", from total:" (count @*result))
-        (let [
-              ;bad-urls (filter
-              ;           (fn [[url data]]
-              ;             (not
-              ;               ((:check-fn config) url data)))
-              ;           @*result)
-              ;bad-urls (map (fn [[url data]] (str url " " (first (:from data)))) bad-urls)
-              ;bad-status (filter
-              ;             (fn [[url data]]
-              ;               (and
-              ;                 ((:check-fn config) url data)
-              ;                 (integer? (:status data))
-              ;                 (not= (:status data) 200)))
-              ;             @*result)
-              ;bad-status (map (fn [[url data]] (str url " " (:status data) " : " (:from data))) bad-status)
-              report-result-filtered (filter
+        (let [report-result-filtered (filter
                               (fn [[url data]]
                                 (and
                                   ((:check-fn config) url data)

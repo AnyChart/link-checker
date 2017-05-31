@@ -1,4 +1,4 @@
-(defproject com.anychart/link-checker "0.1.0"
+(defproject com.anychart/link-checker "0.1.1"
   :description "Library for finding broken links"
   :url "https://github.com/AnyChart/link-checker"
   :license {:name "MIT License"
@@ -10,4 +10,5 @@
                  [org.apache.commons/commons-lang3 "3.5"]
                  [clj-http "3.6.0"]
                  [com.cemerick/url "0.1.1"]
-                 [enlive "1.1.6"]])
+                 [enlive "1.1.6"]
+                 [org.jsoup/jsoup "1.10.2"]])
