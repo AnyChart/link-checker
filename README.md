@@ -20,6 +20,9 @@ A Clojure library designed to find broken links in your site.
     {;; function for filtering links which to process
      :check-fn         (fn [url data]
                          (.contains url "//docs.anychart.com"))
+     ;; function to invoke each itaration to control process
+     :iteration-fn (fn [iteration urls-count urls-for-check-total-count total-count]
+                     (println "Iteration: " iteration urls-count urls-for-check-total-count total-count))                    
      ;; each loop it sends 100 requests
      :max-loop-count   100
      ;; apply to urls like '//example.com'

@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [clojure.set]
             [clj-http.client :as client]
+            [link-checker.utils]
             [link-checker.url]
             [link-checker.html]))
 
@@ -75,19 +76,22 @@
 
 (defn run-requests [*result config]
   (swap! (:*loop-count config) inc)
-  (println "Run requets, iteration: " @(:*loop-count config))
+  ;(println "Run requets, iteration: " @(:*loop-count config))
   (let [urls-for-check-total (get-urls-for-check *result (:check-fn config))
         urls-for-check-total-count (count urls-for-check-total)
         urls-for-check (take 100 urls-for-check-total)
         urls-count (count urls-for-check)
         *current-count (atom 0)]
-    (println "Run: " urls-count ", from: " urls-for-check-total-count ", from total: " (count @*result))
+    ;(println "Run: " urls-count ", from: " urls-for-check-total-count ", from total: " (count @*result))
     (if (and (pos? urls-count)
              (<= @(:*loop-count config) (:max-loop-count config)))
-      (doseq [[url _] urls-for-check]
-        (check-url-async url *result urls-count *current-count run-requests config))
       (do
-        (println "Stop, uncheked: " (count (get-urls-for-check *result (:check-fn config))) ", from total:" (count @*result))
+        ;(println "Run requets, iteration: " @(:*loop-count config) urls-count urls-for-check-total-count (count @*result))
+        ((:iteration-fn config) @(:*loop-count config) urls-count urls-for-check-total-count (count @*result))
+        (doseq [[url _] urls-for-check]
+         (check-url-async url *result urls-count *current-count run-requests config)))
+      (do
+        ;(println "Stop, uncheked: " (count (get-urls-for-check *result (:check-fn config))) ", from total:" (count @*result))
         (let [report-result-filtered (filter
                                        (fn [[url data]]
                                          (and
@@ -105,6 +109,7 @@
 (defn start-by-urls [urls init-url config]
   (let [config (assoc config
                  :*loop-count (atom 0)
+                 :iteration-fn (or (:iteration-fn config) (constantly true))
                  :max-loop-count (or (:max-loop-count config) Integer/MAX_VALUE)
                  :default-protocol (or (:default-protocol config) "https"))
         result (reduce (fn [res url]
