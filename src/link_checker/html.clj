@@ -6,8 +6,8 @@
   (:import (org.jsoup Jsoup)))
 
 
-(defn get-raw-hrefs
-  "get href attributes from page, e. g:
+(defn get-raw-hrefs-soup
+  "get href and text from links in page, e. g:
   /beta/Resource_Chart
   https://twitter.com/AnyChart
   ./Downloading_AnyChart
@@ -16,19 +16,12 @@
   #someurl
   ... etc"
   [s]
-  (let [page (html/html-snippet s)
-        hrefs (some->> (html/select page [:a])
-                       (filter #(some? (:href (:attrs %))))
-                       (map #(:href (:attrs %))))]
-    hrefs))
-
-
-(defn get-raw-hrefs-soup [s]
   (let [doc (Jsoup/parse s)
         hrefs (.select doc "a[href]")
-        hrefs (map (fn [link] (.attr link "href")) hrefs)]
+        hrefs (map (fn [link] {:href (.attr link "href")
+                               :text (.text link)}) hrefs)]
     hrefs))
-
+;
 
 (defn add-protocol [url config]
   (if (.startsWith url "//")
@@ -67,16 +60,18 @@
       (fix-relative-url source-url)))
 
 
-;; (link-cheker.html/get-page-urls "https://docs.anychart.com/Quick_Start/Quick_Start" (slurp "https://docs.anychart.com/Quick_Start/Quick_Start"))
+;; (link-cheker.html/get-page-urls "https://docs.anychart.com/Quick_Start/Quick_Start"
+;;                                  (slurp "https://docs.anychart.com/Quick_Start/Quick_Start")
+;;                                  {:default-protocol "http"})
 (defn get-page-urls [source-url s config]
   (let [;base-path (url-utils/base-path source-url)
         raw-urls (get-raw-hrefs-soup s)
         ;; delete local #hrefs
-        raw-urls (distinct (remove #(.startsWith % "#") raw-urls))
+        raw-urls (distinct (remove #(.startsWith (:href %) "#") raw-urls))
         ;; create hash-map data for each url
-        raw-urls (map #(hash-map :url (fix-url % source-url config)
-                                 :href %) raw-urls)
+        raw-urls (map #(hash-map :url (fix-url (:href %) source-url config)
+                                 :link %) raw-urls)
         ;; group hrefs to one link
         raw-urls (group-by :url raw-urls)
-        raw-urls (map (fn [[url data]] {:url url :hrefs (map :href data)}) raw-urls)]
+        raw-urls (map (fn [[url data]] {:url url :links (map :link data)}) raw-urls)]
     raw-urls))
