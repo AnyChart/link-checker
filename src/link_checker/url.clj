@@ -17,6 +17,9 @@
   (let [path (.getPath (URL. url))
         base (base-path url)
         encoded-path (string/join "/"
-                                  (map url-utils/url-encode
+                                  (map #(url-utils/url-encode
+                                         (try (url-utils/url-decode %)
+                                              (catch Exception e
+                                                %)))
                                        (string/split path #"/")))]
     (str base encoded-path)))
