@@ -19,8 +19,14 @@
   (let [doc (Jsoup/parse s)
         hrefs (.select doc "a[href]")
         hrefs (map (fn [link] {:href (.attr link "href")
-                               :text (.text link)}) hrefs)]
-    hrefs))
+                               :text (.text link)}) hrefs)
+        hrefs-css (.select doc "link[href]")
+        hrefs-css (map (fn [link] {:href (.attr link "href")
+                                   :text "text/css"}) hrefs-css)
+        hrefs-js (.select doc "script[src]")
+        hrefs-js (map (fn [link] {:href (.attr link "src")
+                                  :text "text/javascript"}) hrefs-js)]
+    (concat hrefs hrefs-css hrefs-js)))
 ;
 
 (defn add-protocol [url config]
