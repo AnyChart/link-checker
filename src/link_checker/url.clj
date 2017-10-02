@@ -9,7 +9,7 @@
         path (.getPath u)
         base (subs url
                    0
-                   (- (count url) (count path)))]
+                   (.indexOf url path))]
     base))
 
 
