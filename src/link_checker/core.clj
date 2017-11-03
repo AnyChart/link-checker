@@ -113,13 +113,11 @@
 ;;======================================================================================================================
 ;; Iteration (bunch requests)
 ;;======================================================================================================================
-(defn get-urls-for-check [*result check-fn]
+(defn get-urls-for-check [*result]
   (filter
     (fn [[url data]]
       (and
-        (nil? (:status data))
-        ;(check-fn url data)
-        ))
+        (nil? (:status data))))
     @*result))
 
 
@@ -133,19 +131,18 @@
     (let [report-result-filtered (filter
                                    (fn [[url data]]
                                      (and
-                                       ;((:check-fn config) url)
                                        (integer? (:status data))
                                        (not= (:status data) 200)))
                                    @*result)
           report-result (map (fn [[url data]] {:url  url
                                                :from (:from data)}) report-result-filtered)]
-      ;(println "Print report, urls for check: " (count (get-urls-for-check *result (:check-fn config))) ", total: " (count @*result))
+      ;(println "Print report, urls for check: " (count (get-urls-for-check *result)) ", total: " (count @*result))
       (when (:end-fn config)
         ((:end-fn config) report-result)))))
 
 (defn run-requests [*result config]
   (swap! (:*loop-count config) inc)
-  (let [urls-for-check-total (get-urls-for-check *result (:check-fn config))
+  (let [urls-for-check-total (get-urls-for-check *result)
         urls-for-check-total-count (count urls-for-check-total)
         urls-for-check (take 100 urls-for-check-total)
         urls-count (count urls-for-check)
