@@ -251,24 +251,68 @@
 ;;======================================================================================================================
 (comment
   {
-   "https://docs.anychart.com/8.0.1/Quick_Start/Quick_Start" {:from   [{:url   "https://docs.anychart.com/8.0.1/sitemap"
-                                                                        :links [{:href "https://docs.anychart.com/8.0.1/sitemap"
-                                                                                 :text "sitemap"}]}]
-                                                              :status 200}
+   "https://docs.anychart.com/8.0.1/Quick_Start/Quick_Start"  {:from   [{:url   "https://docs.anychart.com/8.0.1/sitemap"
+                                                                         :links [{:href "https://docs.anychart.com/8.0.1/sitemap"
+                                                                                  :text "sitemap"}]}]
+                                                               :status 200}
 
-   "https://docs.anychart.com/8.0.1/Quick_Start/Credits"     {:from [{:url   "https://docs.anychart.com/8.0.1/sitemap"
-                                                                      :links [{:href "https://docs.anychart.com/8.0.1/sitemap"
-                                                                               :text "sitemap"}]}]}
+   "https://docs.anychart.com/8.0.1/Quick_Start/Credits"      {:from [{:url   "https://docs.anychart.com/8.0.1/sitemap"
+                                                                       :links [{:href "https://docs.anychart.com/8.0.1/sitemap"
+                                                                                :text "sitemap"}]}]}
 
-   "https://docs.anychart.com/7.14.3/Quick_Start/Credits"    {:from [{:url   "https://docs.anychart.com/8.0.1/Quick_Start/Credits"
-                                                                      :links [{:href "https://docs.anychart.com/8.0.1/sitemap"
-                                                                               :text "sitemap"}]}]}
+   "https://docs.anychart.com/8.0.1/Quick_Start/Credits#asdf" {:from [{:url   "https://docs.anychart.com/8.0.1/sitemap"
+                                                                       :links [{:href "https://docs.anychart.com/8.0.1/sitemap"
+                                                                                :text "sitemap"}]}]}
 
-   "http://api.anychart.com/"                                {:from [{:url   "https://docs.anychart.com/8.0.1/Quick_Start/Credits"
-                                                                      :links [{:href "http://anychart.com"
-                                                                               :text "AnyChart"}]}]}
+   "https://docs.anychart.com/7.14.3/Quick_Start/Credits"     {:from [{:url   "https://docs.anychart.com/8.0.1/Quick_Start/Credits"
+                                                                       :links [{:href "https://docs.anychart.com/8.0.1/sitemap"
+                                                                                :text "sitemap"}]}]}
 
-   "http://anychart.com/"                                    {:from [{:url   "https://docs.anychart.com/8.0.1/Quick_Start/Credits"
-                                                                      :links [{:href "http://anychart.com"
-                                                                               :text "AnyChart"}]}]}
+   "http://api.anychart.com/"                                 {:from [{:url   "https://docs.anychart.com/8.0.1/Quick_Start/Credits"
+                                                                       :links [{:href "http://anychart.com"
+                                                                                :text "AnyChart"}]}]}
+
+   "http://anychart.com/"                                     {:from [{:url   "https://docs.anychart.com/8.0.1/Quick_Start/Credits"
+                                                                       :links [{:href "http://anychart.com"
+                                                                                :text "AnyChart"}]}]}
    })
+
+(comment
+  [
+   {
+    :url  "http://api.anychart.stg/ilevd-test/anychart.enums.GanttDataFields#CONNECT_TO"
+    :from ({:url   "http://docs.anychart.stg/ilevd-test/Gantt_Chart/Project_Chart#tasks_types"
+            :links ({:href "//api.anychart.stg/ilevd-test/anychart.enums.GanttDataFields#CONNECT_TO"
+                     :text "connectTo)"})}
+            {:url   "http://docs.anychart.stg/ilevd-test/Gantt_Chart/Project_Chart"
+             :links ({:href "//api.anychart.stg/ilevd-test/anychart.enums.GanttDataFields#CONNECT_TO"
+                      :text "connectTo)"})})
+    }
+
+   {:url    "https://docs.anychart.com/8.0.1/Quick_Start/Quick_Start"
+    :from   [{:url   "https://docs.anychart.com/8.0.1/sitemap"
+              :links [{:href "https://docs.anychart.com/8.0.1/sitemap"
+                       :text "sitemap"}]}]
+    :status 200}
+
+   {:url  "https://docs.anychart.com/8.0.1/Quick_Start/Credits"
+    :from [{:url   "https://docs.anychart.com/8.0.1/sitemap"
+            :links [{:href "https://docs.anychart.com/8.0.1/sitemap"
+                     :text "sitemap"}]}]}
+
+   "https://docs.anychart.com/8.0.1/Quick_Start/Credits#asdf" {:from [{:url   "https://docs.anychart.com/8.0.1/sitemap"
+                                                                       :links [{:href "https://docs.anychart.com/8.0.1/sitemap"
+                                                                                :text "sitemap"}]}]}
+
+   "https://docs.anychart.com/7.14.3/Quick_Start/Credits" {:from [{:url   "https://docs.anychart.com/8.0.1/Quick_Start/Credits"
+                                                                   :links [{:href "https://docs.anychart.com/8.0.1/sitemap"
+                                                                            :text "sitemap"}]}]}
+
+   "http://api.anychart.com/" {:from [{:url   "https://docs.anychart.com/8.0.1/Quick_Start/Credits"
+                                       :links [{:href "http://anychart.com"
+                                                :text "AnyChart"}]}]}
+
+   "http://anychart.com/" {:from [{:url   "https://docs.anychart.com/8.0.1/Quick_Start/Credits"
+                                   :links [{:href "http://anychart.com"
+                                            :text "AnyChart"}]}]}
+   ])
