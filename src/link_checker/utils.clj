@@ -6,11 +6,11 @@
     (zipmap esc-chars
             (map #(str "\\" %) esc-chars))))
 
-(defn str-to-pattern
-  [string]
-  (->> string
-       (replace regex-char-esc-smap)
-       (reduce str)))
+(defn str-to-pattern [s]
+  (let [s (string/replace s #"&" "&amp;")]
+    (->> s
+        (replace regex-char-esc-smap)
+        (reduce str))))
 
 (defn good-ref? [ref html]
   (let [ref (if (string/starts-with? ref "#")
