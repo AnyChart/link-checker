@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]))
 
 (def regex-char-esc-smap
-  (let [esc-chars "()&^%$#!?*."]
+  (let [esc-chars "()&^%$#!?*.+"]
     (zipmap esc-chars
             (map #(str "\\" %) esc-chars))))
 
@@ -16,8 +16,9 @@
   (let [ref (if (string/starts-with? ref "#")
               (subs ref 1)
               ref)
-        ref (str-to-pattern ref)]
-    (re-find (re-pattern (str "id=['\"]" ref "['\"]|name=['\"]" ref "['\"]")) html)))
+        ref (str-to-pattern ref)
+        pat (re-pattern (str "id=['\"]" ref "['\"]|name=['\"]" ref "['\"]"))]
+    (re-find pat html)))
 
 (defn bad-ref? [ref html]
   (not (good-ref? ref html)))
