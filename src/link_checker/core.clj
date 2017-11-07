@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [clojure.set]
             [clj-http.client :as client]
-            [link-checker.utils]
+            [link-checker.utils :as utils]
             [link-checker.url]
             [link-checker.html])
   (:import (java.net URL)))
@@ -60,7 +60,7 @@
                       ;(prn :ok url status @*current-count "/" urls-count)
                       ;; full page check, add new pages for checking
                       (let [redirected-url (or (last trace-redirects) url)
-                            page-urls (link-checker.html/get-page-urls redirected-url body config)]
+                            [page-urls bad-ref-urls] (link-checker.html/get-page-urls redirected-url body config)]
                         (swap! *result (fn [result]
                                          (let [result (assoc-in result [url :status]
                                                                 (if-let [ref (.getRef (URL. url))]
@@ -73,10 +73,16 @@
                                                                 (if ((:add-fn config) new-url)
                                                                   (update-in result [new-url :from] conj {:url   url
                                                                                                           :links links})
-                                                                  result
-                                                                  ))
+                                                                  result))
                                                               result
-                                                              page-urls)]
+                                                              page-urls)
+                                               result (reduce (fn [result bad-ref-url]
+                                                                (-> result
+                                                                    (assoc-in [(:url bad-ref-url) :status] -1)
+                                                                    (update-in [(:url bad-ref-url) :from] conj {:url   url
+                                                                                                                :links (:links bad-ref-url)})))
+                                                              result
+                                                              bad-ref-urls)]
                                            result))))
                       (check-end-fn (swap! *current-count inc)))
                     (fn [e]
@@ -195,53 +201,60 @@
 ;; Testing
 ;;======================================================================================================================
 
-;(defn domain-url [domain]
-;  (case domain
-;    :stg "http://docs.anychart.stg/"
-;    :prod "https://docs.anychart.com/"
-;    :local "http://localhost:8080/"))
-;
-;
-;(defn get-check-fn [version-key domain]
-;  (fn [url]
-;    (and (not (.contains url "export-server.jar"))
-;         (not (.endsWith url (str "/" version-key "/download")))
-;         (.contains url (str (domain-url domain) version-key "/")))))
-;
-;(defn get-add-fn [version-key domain]
-;  (fn [url]
-;    (if (and (.startsWith url (domain-url domain))
-;             (not (.startsWith url (str (domain-url domain) version-key "/"))))
-;      false
-;      true)))
-;
-;(defn get-sitemap-urls [version-key domain]
-;  (let [sitemap-url (str (domain-url domain) "sitemap/" version-key)
-;        sitemap-urls (map link-checker.url/prepare-url (urls-from-sitemap sitemap-url))
-;        sitemap-urls (map
-;                       (fn [s] (case domain
-;                                 :prod s
-;                                 :stg (-> s
-;                                          (clojure.string/replace #"\.com" ".stg")
-;                                          (clojure.string/replace #"https:" "http:"))
-;                                 :local (-> s (clojure.string/replace #"https://docs\.anychart\.com" "http://localhost:8080"))))
-;                       sitemap-urls)]
-;    sitemap-urls))
-;
-;(defn check-broken-links [version-key domain]
-;  (let [sitemap-url (str (domain-url domain) "sitemap/" version-key)
-;        sitemap-urls (get-sitemap-urls version-key domain)
-;        config {:check-fn         (get-check-fn version-key domain)
-;                :add-fn           (get-add-fn version-key domain)
-;                :iteration-fn     (fn [iteration urls-count urls-for-check-total-count total-count]
-;                                    (println "Iteration: " iteration urls-count urls-for-check-total-count total-count))
-;                :max-loop-count   40
-;                :default-protocol "http"
-;                :end-fn           (fn [res]
-;                                    (prn "END: " res)
-;                                    (prn "REVERT END: " (link-checker.utils/revert-result res))
-;                                    )}]
-;    (start-by-urls sitemap-urls sitemap-url config)))
+(defn domain-url [domain]
+  (case domain
+    :stg "http://docs.anychart.stg/"
+    :prod "https://docs.anychart.com/"
+    :local "http://localhost:8080/"))
+
+
+(defn get-check-fn [version-key domain]
+  (fn [url]
+    (and (not (.contains url "export-server.jar"))
+         (not (.endsWith url (str "/" version-key "/download")))
+         (.contains url (str (domain-url domain) version-key "/")))))
+
+(defn get-add-fn [version-key domain]
+  (fn [url]
+    (cond
+      ;; cause it's not ready when it checks
+      (.endsWith url (str "/" version-key "/download")) false
+      ;; cause it's banned in Russia
+      (= url "https://www.linkedin.com/company/386660") false
+      ;; cause github's anchor without id="overview"
+      (= url "https://github.com/AnyChart/docs.anychart.com#overview") false
+      ;; allow only current version urls for deep analysis
+      (.startsWith url (str (domain-url domain) version-key "/")) true
+      (.startsWith url (domain-url domain)) false
+      :else true)))
+
+(defn get-sitemap-urls [version-key domain]
+  (let [sitemap-url (str (domain-url domain) "sitemap/" version-key)
+        sitemap-urls (map link-checker.url/prepare-url (urls-from-sitemap sitemap-url))
+        sitemap-urls (map
+                       (fn [s] (case domain
+                                 :prod s
+                                 :stg (-> s
+                                          (clojure.string/replace #"\.com" ".stg")
+                                          (clojure.string/replace #"https:" "http:"))
+                                 :local (-> s (clojure.string/replace #"https://docs\.anychart\.com" "http://localhost:8080"))))
+                       sitemap-urls)]
+    sitemap-urls))
+
+(defn check-broken-links [version-key domain]
+  (let [sitemap-url (str (domain-url domain) "sitemap/" version-key)
+        sitemap-urls (get-sitemap-urls version-key domain)
+        config {:check-fn         (get-check-fn version-key domain)
+                :add-fn           (get-add-fn version-key domain)
+                :iteration-fn     (fn [iteration urls-count urls-for-check-total-count total-count]
+                                    (println "Iteration: " iteration urls-count urls-for-check-total-count total-count))
+                :max-loop-count   45
+                :default-protocol "http"
+                :end-fn           (fn [res]
+                                    (prn "END: " res)
+                                    (prn "REVERT END: " (link-checker.utils/revert-result res))
+                                    )}]
+    (start-by-urls sitemap-urls sitemap-url config)))
 
 ;;======================================================================================================================
 ;; Result struct

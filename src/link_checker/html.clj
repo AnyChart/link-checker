@@ -2,7 +2,8 @@
   (:require [net.cgrand.enlive-html :as html]
             [link-checker.url :as url-utils]
             [cemerick.url]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [link-checker.utils :as utils])
   (:import (org.jsoup Jsoup)))
 
 
@@ -82,13 +83,26 @@
               {:href "https://www.anychart.com", :text "AnyChart"}
               {:href "https://www.anychart.com", :text "AnyChart.Com"})}])
 
+
+
+
 (defn get-page-urls [source-url s config]
   (let [;base-path (url-utils/base-path source-url)
+        source-url (utils/drop-ref source-url)
         raw-urls1 (get-raw-hrefs-soup s)
 
         ;; delete local #hrefs
         ;; TODO: add self checking for internal links e.g: #page-anchor
-        raw-urls2 (distinct (remove #(.startsWith (:href %) "#") raw-urls1))
+        ;raw-urls2 (distinct (remove #(.startsWith (:href %) "#") raw-urls1))
+
+        {raw-urls2 false ref-urls true} (group-by #(.startsWith (:href %) "#") raw-urls1)
+        ref-urls (filter #(utils/bad-ref? (:href %) s) ref-urls)
+        ref-urls (map (fn [link]
+                        {:url   (str source-url (:href link))
+                         :links [link]}) ref-urls)
+
+        raw-urls2 (distinct raw-urls2)
+
 
         ;; create hash-map data for each url
         raw-urls3 (map #(hash-map :url (fix-url (:href %) source-url config)
@@ -96,4 +110,4 @@
         ;; group hrefs to one link
         raw-urls (group-by :url raw-urls3)
         raw-urls (map (fn [[url data]] {:url url :links (map :link data)}) raw-urls)]
-    raw-urls))
+    [raw-urls ref-urls]))
