@@ -11,11 +11,6 @@
 ;;======================================================================================================================
 ;; Utils
 ;;======================================================================================================================
-
-(defn take-n [n hash]
-  (into {} (take n hash)))
-
-
 (defn urls-from-sitemap [url]
   (let [data (xml/parse url)
         urls (map #(->> %
@@ -69,6 +64,7 @@
                                                                     status
                                                                     -1)
                                                                   status))
+                                               ;; add found urls for check
                                                result (reduce (fn [result {new-url :url links :links}]
                                                                 (if ((:add-fn config) new-url)
                                                                   (update-in result [new-url :from] conj {:url   url
@@ -76,6 +72,7 @@
                                                                   result))
                                                               result
                                                               page-urls)
+                                               ;; add bad internal refs: #self_page_link
                                                result (reduce (fn [result bad-ref-url]
                                                                 (-> result
                                                                     (assoc-in [(:url bad-ref-url) :status] -1)
