@@ -56,19 +56,20 @@
     url))
 
 (defn fix-url [url source-url config]
-  (-> url
-      ;; delete hash from last
-      ; delete-page-hash
-      ;; add https if not
-      (add-protocol config)
-      ;;.add base to "/path/path"
-      (add-base-path (url-utils/base-path source-url))
-      ;; fix relative: "../path/path"
-      (fix-relative-url source-url)
+  (try
+    (-> url
+       ;; delete hash from last
+       ; delete-page-hash
+       ;; add https if not
+       (add-protocol config)
+       ;;.add base to "/path/path"
+       (add-base-path (url-utils/base-path source-url))
+       ;; fix relative: "../path/path"
+       (fix-relative-url source-url)
 
-      url-utils/prepare-url
-      )
-  )
+       url-utils/prepare-url)
+    (catch Exception e
+      url)))
 
 
 ;; (link-checker.html/get-page-urls "https://docs.anychart.com/Quick_Start/Quick_Start"

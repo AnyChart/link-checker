@@ -29,6 +29,7 @@
 ;;======================================================================================================================
 
 (defn on-error [url *result urls-count *current-count end-fn config e]
+  (prn "ERROR: " url e)
   (swap! *result (fn [result]
                    (-> result
                        (assoc-in [url :status] -1)
