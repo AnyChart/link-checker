@@ -176,8 +176,8 @@
 (defn init-result [urls init-url]
   (reduce (fn [res url]
             (assoc res url {:from [{:url   init-url
-                                    :links [{:href init-url
-                                             :text init-url}]}]}))
+                                    :links [{:href url
+                                             :text url}]}]}))
           {}
           urls))
 
