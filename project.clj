@@ -1,4 +1,4 @@
-(defproject com.anychart/link-checker "0.2.5"
+(defproject com.anychart/link-checker "0.2.6"
   :description "Library for finding broken links"
   :url "https://github.com/AnyChart/link-checker"
   :license {:name "MIT License"
