@@ -24,7 +24,7 @@
                                           (try (url-utils/url-decode %)
                                                (catch Exception e
                                                  %)))
-                                       (string/split path #"/")))]
+                                       (string/split path #"/" -1)))]
     (str base
          encoded-path
          (when query (str "?" query))

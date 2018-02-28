@@ -144,6 +144,7 @@
       (when (:end-fn config)
         ((:end-fn config) report-result)))))
 
+
 (defn run-requests [*result config]
   (swap! (:*loop-count config) inc)
   (let [urls-for-check-total (get-urls-for-check *result)
@@ -174,6 +175,7 @@
     :max-loop-count (or (:max-loop-count config) Integer/MAX_VALUE)
     :default-protocol (or (:default-protocol config) "https")))
 
+
 (defn init-result [urls init-url]
   (reduce (fn [res url]
             (assoc res url {:from [{:url   init-url
@@ -182,11 +184,11 @@
           {}
           urls))
 
+
 (defn start-by-urls [urls init-url config]
   (let [config (init-config config)
         *result (atom (init-result urls init-url))]
     (run-requests *result config)))
-
 
 
 (defn start-by-sitemap-url [sitemap-url config]
@@ -212,6 +214,7 @@
          (not (.endsWith url (str "/" version-key "/download")))
          (.contains url (str (domain-url domain) version-key "/")))))
 
+
 (defn get-add-fn [version-key domain]
   (fn [url]
     (cond
@@ -226,6 +229,7 @@
       (.startsWith url (domain-url domain)) false
       :else true)))
 
+
 (defn get-sitemap-urls [version-key domain]
   (let [sitemap-url (str (domain-url domain) "sitemap/" version-key)
         sitemap-urls (map link-checker.url/prepare-url (urls-from-sitemap sitemap-url))
@@ -238,6 +242,7 @@
                                  :local (-> s (clojure.string/replace #"https://docs\.anychart\.com" "http://localhost:8080"))))
                        sitemap-urls)]
     sitemap-urls))
+
 
 (defn check-broken-links [version-key domain]
   (let [sitemap-url (str (domain-url domain) "sitemap/" version-key)
@@ -284,6 +289,7 @@
                                                                        :links [{:href "http://anychart.com"
                                                                                 :text "AnyChart"}]}]}
    })
+
 
 (comment
   [
