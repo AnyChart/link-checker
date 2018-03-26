@@ -8,6 +8,9 @@
             [link-checker.html])
   (:import (java.net URL)))
 
+
+(def headers {"User-Agent" "Mozilla/5.0 (Windows NT 6.1;) Gecko/20100101 Firefox/13.0.1"})
+
 ;;======================================================================================================================
 ;; Utils
 ;;======================================================================================================================
@@ -51,7 +54,7 @@
 
       (if ((:check-fn config) url)
 
-        (client/get url {:async? true}
+        (client/get url {:async? true :headers headers}
                     (fn [{:keys [body status trace-redirects] :as response}]
                       ;(prn :ok url status @*current-count "/" urls-count)
                       ;; full page check, add new pages for checking
@@ -88,7 +91,7 @@
 
         (if-let [ref (.getRef (URL. url))]
 
-          (client/get url {:async? true}
+          (client/get url {:async? true :headers headers}
                       (fn [{:keys [body status trace-redirects] :as response}]
                         (if (and (= status 200)
                                  (re-find (re-pattern (str "id=['\"]" ref "['\"]")) body))
@@ -100,7 +103,7 @@
                       (fn [e]
                         (on-error url *result urls-count *current-count end-fn config e)))
 
-          (client/head url {:async? true}
+          (client/head url {:async? true :headers headers}
                        (fn [{:keys [body status trace-redirects] :as response}]
                          ;(prn :ok url status @*current-count "/" urls-count)
                          (swap! *result (fn [result]
