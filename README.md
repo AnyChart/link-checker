@@ -6,7 +6,7 @@ A Clojure library to search for broken links on a web site.
 
 #### Leiningen
 
-[![https://img.shields.io/clojars/v/com.anychart/link-checker.svg]](https://clojars.org/com.anychart/link-checker)
+![https://img.shields.io/clojars/v/com.anychart/link-checker.svg] https://clojars.org/com.anychart/link-checker
 
 ## Usage
 
