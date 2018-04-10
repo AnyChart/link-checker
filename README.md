@@ -1,13 +1,12 @@
 # link-checker
 
-A Clojure library designed to find broken links in your site.
+A Clojure library to search for broken links on a web site.
 
 ## Installation
 
 #### Leiningen
 
-[![Clojars Project](https://img.shields.io/clojars/v/com.anychart/link-checker.svg)](https://clojars.org/com.anychart/link-checker)
-
+[!https://img.shields.io/clojars/v/com.anychart/link-checker.svg](https://clojars.org/com.anychart/link-checker)
 
 ## Usage
 
@@ -20,13 +19,13 @@ A Clojure library designed to find broken links in your site.
 
 (link-checker/start-by-sitemap-url
   "https://docs.anychart.com/sitemap"
-  {;; function for filtering links which to process
+  {;; function for filtering links to process
    :check-fn         (fn [url data]
                        (.contains url "//docs.anychart.com"))
-   ;; function which will be invoked each itaration to control process
+   ;; function which to be invoked for each iteration to control the process
    :iteration-fn     (fn [iteration urls-count remaining-checked-urls-count total-urls-count]
                        (println "Iteration: " iteration urls-count remaining-checked-urls-count total-urls-count))
-   ;; each loop it sends 100 requests
+   ;; each loop sends 100 requests
    :max-loop-count   50
    ;; apply to urls like '//example.com'
    :default-protocol "https"
