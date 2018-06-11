@@ -37,16 +37,19 @@
 (defn delete-page-hash [url]
   (first (string/split url #"#")))
 
+
 (defn add-protocol [url config]
   (if (.startsWith url "//")
     (str (:default-protocol config) ":" url)
     url))
+
 
 (defn add-base-path [url base]
   (if (and (.startsWith url "/")
            (not (.startsWith url "//")))
     (str base url)
     url))
+
 
 (defn fix-relative-url [url source-url]
   (if (or (.startsWith url ".")
@@ -55,19 +58,20 @@
       (str (cemerick.url/url source-url-without-last-part url)))
     url))
 
+
 (defn fix-url [url source-url config]
   (try
     (-> url
-       ;; delete hash from last
-       ; delete-page-hash
-       ;; add https if not
-       (add-protocol config)
-       ;;.add base to "/path/path"
-       (add-base-path (url-utils/base-path source-url))
-       ;; fix relative: "../path/path"
-       (fix-relative-url source-url)
+        ;; delete hash from last
+        ; delete-page-hash
+        ;; add https if not
+        (add-protocol config)
+        ;;.add base to "/path/path"
+        (add-base-path (url-utils/base-path source-url))
+        ;; fix relative: "../path/path"
+        (fix-relative-url source-url)
 
-       url-utils/prepare-url)
+        url-utils/prepare-url)
     (catch Exception e
       url)))
 

@@ -21,9 +21,11 @@
         base (base-path u)
         encoded-path (string/join "/"
                                   (map #(url-utils/url-encode
-                                          (try (url-utils/url-decode %)
-                                               (catch Exception e
-                                                 %)))
+                                          ;(try (url-utils/url-decode %)
+                                          ;     (catch Exception e
+                                          ;       %)
+                                          ;     )
+                                          %)
                                        (string/split path #"/" -1)))]
     (str base
          encoded-path
