@@ -195,7 +195,7 @@
 
 
 (defn start-by-sitemap-url [sitemap-url config]
-  (let [sitemap-urls (map link-checker.url/prepare-url (urls-from-sitemap sitemap-url))]
+  (let [sitemap-urls (urls-from-sitemap sitemap-url)]
     (start-by-urls sitemap-urls sitemap-url config)))
 
 
@@ -235,7 +235,7 @@
 
 (defn get-sitemap-urls [version-key domain]
   (let [sitemap-url (str (domain-url domain) "sitemap/" version-key)
-        sitemap-urls (map link-checker.url/prepare-url (urls-from-sitemap sitemap-url))
+        sitemap-urls (urls-from-sitemap sitemap-url)
         sitemap-urls (map
                        (fn [s] (case domain
                                  :prod s

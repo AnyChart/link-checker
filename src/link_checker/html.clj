@@ -69,9 +69,7 @@
         ;;.add base to "/path/path"
         (add-base-path (url-utils/base-path source-url))
         ;; fix relative: "../path/path"
-        (fix-relative-url source-url)
-
-        url-utils/prepare-url)
+        (fix-relative-url source-url))
     (catch Exception e
       url)))
 

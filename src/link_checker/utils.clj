@@ -1,16 +1,19 @@
 (ns link-checker.utils
   (:require [clojure.string :as string]))
 
+
 (def regex-char-esc-smap
   (let [esc-chars "()&^%$#!?*.+"]
     (zipmap esc-chars
             (map #(str "\\" %) esc-chars))))
+
 
 (defn str-to-pattern [s]
   (let [s (string/replace s #"&" "&amp;")]
     (->> s
          (replace regex-char-esc-smap)
          (reduce str))))
+
 
 (defn good-ref? [ref html]
   (let [ref (if (string/starts-with? ref "#")
@@ -20,12 +23,14 @@
         pat (re-pattern (str "id=['\"]" ref "['\"]|name=['\"]" ref "['\"]"))]
     (re-find pat html)))
 
+
 (defn bad-ref? [ref html]
   (not (good-ref? ref html)))
 
 
 (defn drop-ref [url]
   (first (string/split url #"#")))
+
 
 (defn revert-result [broken-links]
   (let [
