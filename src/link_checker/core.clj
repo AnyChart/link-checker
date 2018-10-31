@@ -6,7 +6,8 @@
             [link-checker.utils :as utils]
             [link-checker.url]
             [link-checker.html])
-  (:import (java.net URL)))
+  (:import (java.net URL)
+           (java.util.regex Pattern)))
 
 
 (def headers {"User-Agent" "Mozilla/5.0 (Windows NT 6.1;) Gecko/20100101 Firefox/13.0.1"})
@@ -64,7 +65,7 @@
                                          (let [result (assoc-in result [url :status]
                                                                 (if-let [ref (.getRef (URL. url))]
                                                                   (if (and (= status 200)
-                                                                           (re-find (re-pattern (str "id=['\"]" ref "['\"]")) body))
+                                                                           (re-find (re-pattern (str "id=['\"]" (Pattern/quote ref) "['\"]")) body))
                                                                     status
                                                                     -1)
                                                                   status))
@@ -240,9 +241,9 @@
                        (fn [s] (case domain
                                  :prod s
                                  :stg (-> s
-                                          (clojure.string/replace #"\.com" ".stg")
-                                          (clojure.string/replace #"https:" "http:"))
-                                 :local (-> s (clojure.string/replace #"https://docs\.anychart\.com" "http://localhost:8080"))))
+                                          (string/replace #"\.com" ".stg")
+                                          (string/replace #"https:" "http:"))
+                                 :local (-> s (string/replace #"https://docs\.anychart\.com" "http://localhost:8080"))))
                        sitemap-urls)]
     sitemap-urls))
 
