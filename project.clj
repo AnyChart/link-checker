@@ -1,4 +1,4 @@
-(defproject com.anychart/link-checker "0.3.0"
+(defproject com.anychart/link-checker "0.3.1"
   :description "Library for finding broken links"
   :url "https://github.com/AnyChart/link-checker"
   :license {:name "MIT License"
@@ -8,7 +8,8 @@
             [lein-kibit "0.1.3"]]
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.apache.commons/commons-lang3 "3.8.1"]
-                 [clj-http "3.9.1"]
+                 ;; some problems with new clj-http 3.9.1
+                 [clj-http "3.6.0"]
                  [com.cemerick/url "0.1.1"]
                  [enlive "1.1.6"]
                  [org.jsoup/jsoup "1.11.3"]])
